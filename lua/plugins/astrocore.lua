@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 -- AstroCore provides a central place to modify mappings, vim options, autocommands, and more!
 -- Configuration documentation can be found with `:h astrocore`
@@ -57,8 +57,44 @@ return {
               function(bufnr) require("astrocore.buffer").close(bufnr) end
             )
           end,
-          desc = "Close buffer from tabline",
+          desc = "Close buffer from tablines",
         },
+
+      -- navigate buffer tabs with `H` and `L`
+        L = {
+          function() require("astrocore.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
+          desc = "Next buffer",
+        },
+        H = {
+          function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
+          desc = "Previous buffer",
+        },
+
+      -- delete to black hole register
+        ["<leader>D"] = { '"_d', desc = "delete to black hole" },
+        ["<leader>y"] = { '"*yy', desc = "yank to system clipboard" },
+        ["<leader>Y"] = { '"*y', desc = "yank to system clipboard without complete" },
+        ["<leader>W"] = { ":noa w<cr>", desc = "write without saving" },
+
+        -- resize with arrows
+        ["<Up>"] = { function() require("smart-splits").resize_up(2) end, desc = "Resize split up" },
+        ["<Down>"] = { function() require("smart-splits").resize_down(2) end, desc = "Resize split down" },
+        ["<Left>"] = { function() require("smart-splits").resize_left(2) end, desc = "Resize split left" },
+        ["<Right>"] = { function() require("smart-splits").resize_right(2) end, desc = "Resize split right" },
+
+      -- buffer switching
+        ["<Tab>"] = {
+          function()
+            if #vim.t.bufs > 1 then
+              require("telescope.builtin").buffers { sort_mru = true, ignore_current_buffer = true }
+            else
+              astro_utils.notify "No other buffers open"
+            end
+          end,
+          desc = "Switch Buffers",
+        },
+
+
 
         -- tables with just a `desc` key will be registered with which-key if it's installed
         -- this is useful for naming menus
